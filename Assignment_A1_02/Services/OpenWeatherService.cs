@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using System.Text.Json;
 
 using Assignment_A1_02.Models;
+using System.Security.Cryptography.X509Certificates;
 
 namespace Assignment_A1_02.Services
 {
@@ -31,11 +32,11 @@ namespace Assignment_A1_02.Services
             var uri = $"https://api.openweathermap.org/data/2.5/forecast?q={City}&units=metric&lang={language}&appid={apiKey}";
 
             Forecast forecast = await ReadWebApiAsync(uri);
-            
+
             //Event code here to fire the event
             //Your code
 
-
+           
 
             return forecast;
         }
@@ -49,6 +50,9 @@ namespace Assignment_A1_02.Services
 
             //Event code here to fire the event
             //Your code
+
+
+
             return forecast;
         }
         private async Task<Forecast> ReadWebApiAsync(string uri)
