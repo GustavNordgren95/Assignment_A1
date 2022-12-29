@@ -36,7 +36,7 @@ namespace Assignment_A1_02.Services
             //Event code here to fire the event
             //Your code
 
-           
+            WeatherForecastAvailable?.Invoke(forecast, $"Event message from weather service: New weather forecast for {City} available");
 
             return forecast;
         }
@@ -51,7 +51,7 @@ namespace Assignment_A1_02.Services
             //Event code here to fire the event
             //Your code
 
-
+            WeatherForecastAvailable?.Invoke(forecast, $"Event message from weather service: New weather forecast for {latitude} {longitude} available");
 
             return forecast;
         }

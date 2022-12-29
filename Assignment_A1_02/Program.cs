@@ -22,6 +22,8 @@ namespace Assignment_A1_02
             //Register the event
             //Your Code
 
+            service.WeatherForecastAvailable += ReportWeatherForecastAvailable;
+
             Task<Forecast>[] tasks = { null, null };
             Exception exception = null;
             try
@@ -40,6 +42,9 @@ namespace Assignment_A1_02
                 exception = ex;
                 //How to handle an exception
                 //Your Code
+
+
+
             }
 
             foreach (var task in tasks)
@@ -52,6 +57,10 @@ namespace Assignment_A1_02
         //Event handler declaration
         //Your Code
 
+        public static void ReportWeatherForecastAvailable(object sender, string message)
+        {
+            Console.WriteLine(message);
+        }
 
     }
 }
