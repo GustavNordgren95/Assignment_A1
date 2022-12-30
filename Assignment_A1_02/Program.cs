@@ -22,17 +22,17 @@ namespace Assignment_A1_02
             //Register the event
             //Your Code
 
-            service.WeatherForecastAvailable += ReportWeatherForecastAvailable;
+            service.WeatherForecastAvailable += ReportWeatherForecastAvailable; //Subscribed to the broadcaster
 
             Task<Forecast>[] tasks = { null, null };
             Exception exception = null;
             try
             {
-                double latitude = 59.5086798659495;
-                double longitude = 18.2654625932976;
+                double latitude = 59.85859649062523;
+                double longitude = 17.63892985364318;
 
                 //Create the two tasks and wait for completion
-                tasks[0] = service.GetForecastAsync(latitude, longitude);
+                tasks[0] = service.GetForecastAsync(latitude, longitude); //Weather data is stored in task.Result.Items
                 tasks[1] = service.GetForecastAsync("Miami");
 
                 Task.WaitAll(tasks[0], tasks[1]);
@@ -43,24 +43,52 @@ namespace Assignment_A1_02
                 //How to handle an exception
                 //Your Code
 
-
+                Console.WriteLine("-----------");
+                Console.WriteLine(ex.Message);
 
             }
 
             foreach (var task in tasks)
             {
+
                 //How to deal with successful and fault tasks
                 //Your Code
+                var forecastDayGrp = task.Result.Items.GroupBy(d => d.DateTime.Date, d => d);  
+
+                if (tasks != null)
+                {
+                    Console.WriteLine();
+                    Console.WriteLine($"Weather forecast for: {task.Result.City}");
+                    Console.WriteLine();
+                    foreach (var forecastDay in forecastDayGrp)
+                    {
+                        Console.WriteLine();
+                        Console.WriteLine(forecastDay.Key);
+                        Console.WriteLine();
+                        foreach (var item in forecastDay)
+                        {
+                            Console.WriteLine($" {item.DateTime} - Väder: {item.Description}, Temperatur: {item.Temperature}°C, Vind: {item.WindSpeed} m/s");
+                            Console.WriteLine();
+                        }
+                    }
+                }
+
+                else
+                {
+                    throw new Exception("City weather service error");
+                }
+
+
             }
         }
 
         //Event handler declaration
         //Your Code
 
-        public static void ReportWeatherForecastAvailable(object sender, string message)
+        public static void ReportWeatherForecastAvailable(object sender, string message) //Subscriber taking in the message
         {
             Console.WriteLine(message);
         }
-
+        
     }
 }

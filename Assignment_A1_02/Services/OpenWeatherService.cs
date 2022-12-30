@@ -37,6 +37,7 @@ namespace Assignment_A1_02.Services
             //Your code
 
             WeatherForecastAvailable?.Invoke(forecast, $"Event message from weather service: New weather forecast for {City} available");
+            //Message is added here into the method's parameter then is sent back through return forecast
 
             return forecast;
         }
@@ -52,6 +53,7 @@ namespace Assignment_A1_02.Services
             //Your code
 
             WeatherForecastAvailable?.Invoke(forecast, $"Event message from weather service: New weather forecast for {latitude} {longitude} available");
+            
 
             return forecast;
         }
