@@ -44,41 +44,33 @@ namespace Assignment_A1_02
                 //Your Code
 
                 Console.WriteLine("-----------");
+                Console.WriteLine("City weather service error");
                 Console.WriteLine(ex.Message);
 
             }
 
             foreach (var task in tasks)
             {
-
                 //How to deal with successful and fault tasks
                 //Your Code
-                var forecastDayGrp = task.Result.Items.GroupBy(d => d.DateTime.Date, d => d);  
 
-                if (tasks != null)
+                var forecastDayGrp = task.Result.Items.GroupBy(d => d.DateTime.Date, d => d);
+                Console.WriteLine();
+                Console.WriteLine($"Weather forecast for: {task.Result.City}");
+                Console.WriteLine();
+                foreach (var forecastDay in forecastDayGrp)
                 {
                     Console.WriteLine();
-                    Console.WriteLine($"Weather forecast for: {task.Result.City}");
+                    Console.WriteLine(forecastDay.Key);
                     Console.WriteLine();
-                    foreach (var forecastDay in forecastDayGrp)
+                    foreach (var item in forecastDay)
                     {
+                        Console.WriteLine($" {item.DateTime} - Väder: {item.Description}, Temperatur: {item.Temperature}°C, Vind: {item.WindSpeed} m/s");
                         Console.WriteLine();
-                        Console.WriteLine(forecastDay.Key);
-                        Console.WriteLine();
-                        foreach (var item in forecastDay)
-                        {
-                            Console.WriteLine($" {item.DateTime} - Väder: {item.Description}, Temperatur: {item.Temperature}°C, Vind: {item.WindSpeed} m/s");
-                            Console.WriteLine();
-                        }
                     }
                 }
 
-                else
-                {
-                    throw new Exception("City weather service error");
-                }
-
-
+                if (task == null) throw new Exception();
             }
         }
 
