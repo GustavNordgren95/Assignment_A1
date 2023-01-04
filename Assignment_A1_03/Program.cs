@@ -50,7 +50,7 @@ namespace Assignment_A1_03
                 //How to handle an exception
                 //Your Code
                 Console.WriteLine("-----------");
-                Console.WriteLine("City weather service error");
+                Console.WriteLine("Weather service error(s): ");
                 Console.WriteLine(ex.Message);
             }
 
@@ -59,9 +59,9 @@ namespace Assignment_A1_03
                 //How to deal with successful and fault tasks
                 //Your Code
                 var forecastDayGrp = task.Result.Items.GroupBy(d => d.DateTime.Date, d => d);
-                Console.WriteLine();
+                Console.WriteLine("=========================================");
                 Console.WriteLine($"Weather forecast for: {task.Result.City}");
-                Console.WriteLine();
+                Console.WriteLine("=========================================");
                 foreach (var forecastDay in forecastDayGrp)
                 {
                     Console.WriteLine();

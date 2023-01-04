@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using System.Text.Json;
 
 using Assignment_A1_03.Models;
+using System.Collections;
 
 namespace Assignment_A1_03.Services
 {
@@ -19,8 +20,6 @@ namespace Assignment_A1_03.Services
         //Cache declaration
         ConcurrentDictionary<(double, double, string), Forecast> cachedGeoForecasts = new ConcurrentDictionary<(double, double, string), Forecast>();
         ConcurrentDictionary<(string, string), Forecast> cachedCityForecasts = new ConcurrentDictionary<(string, string), Forecast>();
-
-        string CacheKeyTimeStamp = DateTime.Now.ToString("yyyy-MM-dd HH:mm");
 
         // Your API Key
         readonly string apiKey = "459a4733f190f0bda950abaa2f2d5b25";
@@ -38,14 +37,22 @@ namespace Assignment_A1_03.Services
             //generate an event that shows forecast was from cache
             //Your code
 
-            Forecast fResponse = null;
+            //New key for city forecasts
+            (string, string) cacheKeyCity = (City, DateTime.Now.ToString("yyyy-MM-dd HH:mm"));
 
-            (string, string) cacheKey = (City, CacheKeyTimeStamp);
+            Forecast cacheCity;
 
-            if (cachedCityForecasts.ContainsKey(cacheKey))
+            var foundCache = cachedCityForecasts.TryGetValue(cacheKeyCity, out cacheCity);
+
+
+            if (foundCache)
             {
-                OnWeatherForecastAvailable($"Cached weather forecast for {City} available");
-                return cachedCityForecasts[cacheKey];
+                //If not empty it will send an event message that cache was found
+                if (cacheCity.Items.Count > 0)
+                {
+                    OnWeatherForecastAvailable($"Weather cache available for {City}");
+                    return cacheCity;
+                }
             }
 
             //https://openweathermap.org/current
@@ -58,11 +65,11 @@ namespace Assignment_A1_03.Services
             //generate an event with different message if cached data
             //Your code
 
-            if (cachedCityForecasts != null)
-            {
-                WeatherForecastAvailable?.Invoke(cachedCityForecasts, $"Weather forecast for {City} available");
-            }
-            
+            if (cachedCityForecasts.TryAdd((City, DateTime.Now.ToString("yyyy-MM-dd HH:mm")), forecast) is not true)
+            OnWeatherForecastAvailable("Cache failed, where did it go?");
+
+            OnWeatherForecastAvailable($"New weather forecast for {forecast.City} available");
+
             return forecast;
 
         }
@@ -72,14 +79,20 @@ namespace Assignment_A1_03.Services
             //generate an event that shows forecast was from cache
             //Your code
 
-            string CacheKeyTimeStamp = DateTime.Now.ToString("g");
 
-            (double, double, string) cacheKey = (latitude, longitude, CacheKeyTimeStamp);
+            (double, double, string) cacheKeyGeo = (latitude, longitude, DateTime.Now.ToString("yyyy-MM-dd HH:mm"));
 
-            if (cachedGeoForecasts.ContainsKey(cacheKey))
+            Forecast cacheGeo;
+
+            var foundCache = cachedGeoForecasts.TryGetValue(cacheKeyGeo, out cacheGeo);
+
+            if (foundCache)
             {
-                OnWeatherForecastAvailable($"Cached weather forecast for {latitude}, {longitude} available");
-                return cachedGeoForecasts[cacheKey];
+                if (cacheGeo.Items.Count > 0)
+                {
+                    OnWeatherForecastAvailable($"Weather cache available for ({latitude}, {longitude}) ");
+                    return cacheGeo;
+                }
             }
 
             //https://openweathermap.org/current
@@ -92,6 +105,10 @@ namespace Assignment_A1_03.Services
             //generate an event with different message if cached data
             //Your code
 
+            if (cachedGeoForecasts.TryAdd((latitude, longitude, DateTime.Now.ToString("yyyy-MM-dd HH:mm")), forecast) is not true)
+                OnWeatherForecastAvailable("Cache failed");
+
+            OnWeatherForecastAvailable($"New weather forecast for ({latitude}, {longitude}) available");
 
             return forecast;
         }
@@ -128,14 +145,4 @@ namespace Assignment_A1_03.Services
     }
 }
 
-/*
-Modify OpenWeatherService so a Forecast downloaded from the web-api is cached and
-returned for an identical request made within 1 minute. The message from the fired event
-should differ in case of cached or downloaded forecast.
 
-Hint:
-This can be done elegantly using the thread safe version of Dictionary<>. Why thread safe?
-Tuples are excellent for Keys and to get a string of current date/time without seconds can be
-done by DateTime.Now.ToString("yyyy-MM-dd HH:mm") .
-Modify the caller to make multiple requests to show that cached data is received.
-*/
